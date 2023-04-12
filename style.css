@@ -1,0 +1,69 @@
+.container {
+  margin: auto;
+  max-width: 600px;
+  padding: 20px;
+  text-align: center;
+}
+
+.input-field {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.pairings-table {
+  margin-top: 200px;
+}
+
+.pairings-table + .pairings-table {
+  margin-top: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+table {
+  border-collapse: collapse;
+  margin: auto;
+}
+
+th,
+td {
+  padding: 10px;
+  border: 1px solid black;
+}
+
+th {
+  background-color: #ddd;
+}
+
+button {
+  margin-top: 50px;
+  padding: 10px 20px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #3e8e41;
+}
+
+input[type="number"] {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+input[type="text"] {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  width: 100%;
+}
