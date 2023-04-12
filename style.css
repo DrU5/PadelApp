@@ -11,7 +11,7 @@
 }
 
 .pairings-table {
-  margin-top: 200px;
+  margin-top: 50px;
 }
 
 .pairings-table + .pairings-table {
@@ -26,6 +26,7 @@ label {
 table {
   border-collapse: collapse;
   margin: auto;
+  margin-top: 50px;
 }
 
 th,
