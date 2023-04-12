@@ -172,6 +172,8 @@ startBtn.addEventListener("click", () => {
     document.getElementById("tablePairingContainer")
   );
 
+  let player = getSpielerArrayOutput();
+
   generatePairings(player, parseInt(noRoundsInput.value));
 });
 
@@ -231,7 +233,7 @@ function shuffleArray(array) {
   return array;
 }
 
-var player = ["Bob", "Vette", "Seb", "Uwe", "Klaus", "Henne", "Max", "Ulle"];
+//let player = ["Bob", "Vette", "Seb", "Uwe", "Klaus", "Henne", "Max", "Ulle"];
 
 /*
 Problem: 
