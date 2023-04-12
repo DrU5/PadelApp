@@ -204,14 +204,19 @@ function generatePairings(playerContribution, numberMatches) {
 
     for (let k = 1; k < row + 1; k++) {
       let currentRow = table.rows[k];
+      let index;
 
-      for (let i = 0; i < 4; i++) {
-        // Calculate the index in the shuffled array based on row and column
-        var index = (k - 1) * 4 + i;
-
-        // Check if index is within the shuffled array length
-        if (index < shuffled.length + 1) {
-          currentRow.cells[i].innerHTML = shuffled[index];
+      for (let i = 0; i < 5; i++) {
+        if (i < 2) {
+          index = (k - 1) * 4 + i;
+          if (index < shuffled.length + 1) {
+            currentRow.cells[i].innerHTML = shuffled[index];
+          }
+        } else if (i > 2) {
+          index = (k - 1) * 4 + i - 1;
+          if (index < shuffled.length + 1) {
+            currentRow.cells[i].innerHTML = shuffled[index];
+          }
         }
       }
     }
