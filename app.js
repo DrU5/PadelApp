@@ -198,12 +198,12 @@ function generatePairings(playerContribution, numberMatches) {
 
   for (let l = 1; l < numberMatches + 1; l++) {
     var table = document.getElementById("Round " + l);
-    shuffled = shuffleArray(playerContribution);
+    let shuffled = shuffleArray(playerContribution);
 
     console.log(shuffled);
 
     for (let k = 1; k < row + 1; k++) {
-      currentRow = table.rows[k];
+      let currentRow = table.rows[k];
 
       for (let i = 0; i < 4; i++) {
         // Calculate the index in the shuffled array based on row and column
