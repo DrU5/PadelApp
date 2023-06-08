@@ -1,3 +1,11 @@
+let players = [];
+
+function getPlayerIndex(name) {
+  let index = players.findIndex((obj) => obj.name === name);
+  return index;
+}
+
+//Function that creates the table with all player
 function generateTable(playercount, targetParentElement) {
   const spieleranzahl = playercount;
 
@@ -43,6 +51,7 @@ function generateTable(playercount, targetParentElement) {
   tableContainer.appendChild(table);
 }
 
+//Action pressing button "Tabelle erstellen"
 const createTableBtn = document.getElementById("createTableBtn");
 createTableBtn.addEventListener("click", () => {
   const spieleranzahlInput = document.getElementById("spieleranzahl");
@@ -57,6 +66,7 @@ createTableBtn.addEventListener("click", () => {
   );
 });
 
+//Function that creates the Pairings-Table
 function generatePairingsTable(matches, numTimes) {
   const matchesNumber = matches / 4;
 
@@ -137,6 +147,7 @@ function generatePairingsTable(matches, numTimes) {
       const inputCell1 = document.createElement("td");
       const input1 = document.createElement("input");
       input1.type = "number";
+      input1.min = "0";
       inputCell1.appendChild(input1);
       row.appendChild(inputCell1);
 
@@ -147,6 +158,7 @@ function generatePairingsTable(matches, numTimes) {
       const inputCell2 = document.createElement("td");
       const input2 = document.createElement("input");
       input2.type = "number";
+      input2.min = "0";
       inputCell2.appendChild(input2);
       row.appendChild(inputCell2);
 
@@ -158,13 +170,20 @@ function generatePairingsTable(matches, numTimes) {
   }
 }
 
+//Action when button "Starten" is clicked
 const startBtn = document.getElementById("startBtn");
 startBtn.addEventListener("click", () => {
   const spieleranzahlInput = document.getElementById("spieleranzahl");
   const noRoundsInput = document.getElementById("rundenanzahl");
 
-  const spielerArray = getSpielerArrayOutput();
-  console.log(spielerArray);
+  getSpielerArrayOutput();
+
+  if (parseInt(spieleranzahlInput.value) <= parseInt(noRoundsInput.value)) {
+    alert(
+      "Es können nicht ausreichend unterschiedliche Partien generiert werden"
+    );
+    return;
+  }
 
   generatePairingsTable(
     parseInt(spieleranzahlInput.value),
@@ -172,37 +191,61 @@ startBtn.addEventListener("click", () => {
     document.getElementById("tablePairingContainer")
   );
 
-  let player = getSpielerArrayOutput();
+  generatePairings(parseInt(noRoundsInput.value));
 
-  generatePairings(player, parseInt(noRoundsInput.value));
+  createStandings(parseInt(spieleranzahlInput.value));
 });
 
+//Action when button "Tabelle berechnen" is clicked
+let calculateTableBtn = document.getElementById("calculateTableBtn");
+calculateTableBtn.addEventListener("click", () => {
+  createScoreboardTable(calcPlayerPoints());
+
+  console.log(players);
+});
+
+//Function that calculates the points of each player and gives back in right order
+function calcPlayerPoints() {
+  let noRoundsInput = document.getElementById("rundenanzahl");
+  let standings = [];
+
+  for (let i = 0; i < players.length; i++) {
+    standings.push(
+      getPlayerPoints(players[i].name, parseInt(noRoundsInput.value))
+    );
+  }
+
+  standings.sort((a, b) => b[1] - a[1]);
+  console.log(standings);
+  return standings;
+}
+
+//Function that gets the names of all players
 function getSpielerArrayOutput() {
-  const spielerArr = [];
+  //const spielerArr = [];
   const inputElements = document.getElementsByTagName("input");
 
   for (let i = 0; i < inputElements.length; i++) {
     const element = inputElements[i];
     if (element.name.includes("name_")) {
-      spielerArr.push(element.value);
+      let player = { name: element.value };
+      players.push(player);
+      //spielerArr.push(element.value);
     }
   }
 
-  return spielerArr;
+  console.log(players);
+  console.log(players[0].name);
 }
 
-function generatePairings(playerContribution, numberMatches) {
-  const row = playerContribution.length / 4;
-
-  for (let test of playerContribution) {
-    console.log(test);
-  }
+//Function that creates the pairings in the table
+function generatePairings(numberMatches) {
+  const row = players.length / 4;
 
   for (let l = 1; l < numberMatches + 1; l++) {
     var table = document.getElementById("Round " + l);
-    let shuffled = shuffleArray(playerContribution);
-
-    console.log(shuffled);
+    let shuffled = players.map(obj => obj.name);
+    shuffled = shuffleArray(shuffled);
 
     for (let k = 1; k < row + 1; k++) {
       let currentRow = table.rows[k];
@@ -224,7 +267,7 @@ function generatePairings(playerContribution, numberMatches) {
     }
   }
 }
-
+//Function that shuffles the given array
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -233,75 +276,138 @@ function shuffleArray(array) {
   return array;
 }
 
-//let player = ["Bob", "Vette", "Seb", "Uwe", "Klaus", "Henne", "Max", "Ulle"];
+//Function that creates the table "Standings"
+function createStandings(numberPlayers) {
+  // Select the tableStandingsContainer div element
+  let tableStandingsContainer = document.getElementById(
+    "tableStandingsContainer"
+  );
 
-/*
-Problem: 
+  // Clear the content of the tableStandingsContainer div
+  tableStandingsContainer.innerHTML = "";
+
+  // Create a table element
+  let table = document.createElement("table");
+
+  // Create table header row
+  let headerRow = table.insertRow();
+  let platzHeader = document.createElement("th");
+  platzHeader.textContent = "Platz";
+  headerRow.appendChild(platzHeader);
+  let spielerHeader = document.createElement("th");
+  spielerHeader.textContent = "Spieler";
+  headerRow.appendChild(spielerHeader);
+  let punkteHeader = document.createElement("th");
+  punkteHeader.textContent = "Punkte";
+  headerRow.appendChild(punkteHeader);
+
+  // Create table rows for each player
+  for (let i = 1; i <= numberPlayers; i++) {
+    let row = table.insertRow();
+    let platzCell = row.insertCell();
+    platzCell.textContent = i;
+    let spielerCell = row.insertCell();
+    spielerCell.textContent = "Spieler " + i;
+    let punkteCell = row.insertCell();
+    punkteCell.textContent = "0"; // Set initial points to 0
+    players[i - 1].points = 0;
+  }
+
+  // Append the table to the tableStandingsContainer div
+  tableStandingsContainer.appendChild(table);
+}
+
+function createScoreboardTable(teams) {
+  // Sort the teams array by points in descending order
+  const table = document.createElement("table");
+  table.classList.add("scoreboard-table");
 
 
+  // Create table headers
+  const headers = table.createTHead().insertRow();
+  headers.insertCell().textContent = "Rank";
+  headers.insertCell().textContent = "Team";
+  headers.insertCell().textContent = "Points";
 
-*/
+  // Create table body with sorted teams array
+  const tbody = table.createTBody();
+  let rank = 1;
+  for (let i = 0; i < teams.length; i++) { //Teams ist Standings
+    const row = tbody.insertRow();
+    const teamName = row.insertCell();
+    const points = row.insertCell();
+    const currentPoints = teams[i][1];
 
-/* 
+    // Check if previous team has same points
+    if (i > 0 && teams[i - 1][1] === currentPoints) {
+      rank--;
+    }
 
+    // Add data to row
+    row.insertCell().textContent = rank;
+    teamName.textContent = teams[i][0];
+    points.textContent = currentPoints;
 
-Speicher der alten Funktion
+    // Increment rank
+    rank++;
+  }
 
-function generatePairings(playerContribution, numberMatches) {
-  const row = playerContribution.length / 4;
+  return table;
+}
 
-  for (var l = 1; l < numberMatches + 1; l++) {
-    var table = document.getElementById("Round " + l);
-    shuffled = shuffleArray(playerContribution);
+//Function that gives the points from the table
+function getPlayerPoints(searchString, numTimes1) {
+  let value = 0;
+  for (let j = 0; j < numTimes1; j++) {
+    let tableId = `Round ${j + 1}`;
 
-    console.log(shuffled);
+    const table = document.getElementById(tableId);
 
-    for (let j = 0; j < playerContribution.length; j++) {
-      for (let k = 1; k < row + 1; k++) {
-        currentRow = table.rows[k];
+    // Loop through each row of the table
+    for (let i = 0; i < table.rows.length; i++) {
+      const row = table.rows[i];
 
-        for (let i = 0; i < 5; i++) {
-          if (i === 2) {
-            i = 3;
+      // Loop through each cell in the row
+      for (let j = 0; j < row.cells.length; j++) {
+        const cell = row.cells[j];
+
+        // Check if the cell contains the search string
+        if (cell.textContent.includes(searchString)) {
+
+          if (j === 0 || j === 1) {
+            let cellOne =
+              table.rows[i].cells[5].querySelector("input[type=number]");
+              try {
+                value = value + parseInt(cellOne.value);
+              } catch (error) {
+                console.log("Error, du Lappen!", error);
+              }
+            /* if (Number.isNaN(cellOne) != false) {
+              //value = value;
+            } else {
+              value = value + parseInt(cellOne.value);
+            } */
+          } else {
+            let cellOne =
+              table.rows[i].cells[7].querySelector("input[type=number]");
+              try {
+                value = value + parseInt(cellOne.value);
+              } catch (error) {
+                console.log("Error, du Lappen!", error);
+              }
+           /*  if (Number.isNaN(cellOne) != false) {
+              //value = value;
+            } else {
+              value = value + parseInt(cellOne.value);
+            } */
           }
-          currentRow.cells[i].innerHTML = shuffled[j];
         }
       }
     }
   }
+
+  let indexPlayer = getPlayerIndex(searchString);
+  players[indexPlayer].points = value;
+
+  console.log(players[indexPlayer].name + " hat " + players[indexPlayer].points + " Punkte")
 }
-
-*/
-
-/* function generatePairings(playerContribution, numberMatches) {
-  const row = playerContribution.length / 4;
-
-  for (var l = 1; l < numberMatches + 1; l++) {
-    var table = document.getElementById("Round " + l);
-    shuffled = shuffleArray(playerContribution);
-
-    console.log(shuffled);
-
-    for (let k = 1; k < row + 1; k++) {
-      currentRow = table.rows[k];
-
-      for (let i = 0; i < 5; i++) {
-        // Calculate the index in the shuffled array based on row and column
-        var index = (k - 1) * 4 + i;
-
-        // Check if index is within the shuffled array length
-        if (index < shuffled.length + 1) {
-          if (i === 3) {
-            i = 4;
-          }
-          if (i === 2) {
-            i = 3;
-          }
-          currentRow.cells[i].innerHTML = shuffled[index];
-          console.log(i);
-        }
-      }
-    }
-  }
-}
- */
