@@ -199,7 +199,7 @@ startBtn.addEventListener("click", () => {
 //Action when button "Tabelle berechnen" is clicked
 let calculateTableBtn = document.getElementById("calculateTableBtn");
 calculateTableBtn.addEventListener("click", () => {
-  createScoreboardTable(calcPlayerPoints());
+  updateStandings(calcPlayerPoints());  
 
   console.log(players);
 });
@@ -207,17 +207,33 @@ calculateTableBtn.addEventListener("click", () => {
 //Function that calculates the points of each player and gives back in right order
 function calcPlayerPoints() {
   let noRoundsInput = document.getElementById("rundenanzahl");
-  let standings = [];
 
   for (let i = 0; i < players.length; i++) {
-    standings.push(
-      getPlayerPoints(players[i].name, parseInt(noRoundsInput.value))
-    );
+    let playername = players[i].name;
+    getPlayerPoints(playername, parseInt(noRoundsInput.value));
   }
 
-  standings.sort((a, b) => b[1] - a[1]);
-  console.log(standings);
+  let standings = players;
+  standings.sort((a, b) => b.points - a.points);
+  console.log("STANDINGS: ", standings);
   return standings;
+}
+
+//Function that updates the standings-table
+function updateStandings(standings) {
+  const table = document.getElementById("standings");
+  console.log("TABELLE", table);
+  for (let i = 0; i < standings.length; i++) {
+    let row = table.rows[i + 1]; // i+1 to skip the header row
+
+    // Assuming the second cell (index 1) contains the player name
+    let spielerCell = row.cells[1];
+    spielerCell.textContent = standings[i].name;
+
+    // Assuming the third cell (index 2) contains the points
+    let punkteCell = row.cells[2];
+    punkteCell.textContent = standings[i].points;
+  }
 }
 
 //Function that gets the names of all players
@@ -244,7 +260,7 @@ function generatePairings(numberMatches) {
 
   for (let l = 1; l < numberMatches + 1; l++) {
     var table = document.getElementById("Round " + l);
-    let shuffled = players.map(obj => obj.name);
+    let shuffled = players.map((obj) => obj.name);
     shuffled = shuffleArray(shuffled);
 
     for (let k = 1; k < row + 1; k++) {
@@ -288,6 +304,7 @@ function createStandings(numberPlayers) {
 
   // Create a table element
   let table = document.createElement("table");
+  table.setAttribute("id", "standings");
 
   // Create table header row
   let headerRow = table.insertRow();
@@ -317,97 +334,47 @@ function createStandings(numberPlayers) {
   tableStandingsContainer.appendChild(table);
 }
 
-function createScoreboardTable(teams) {
-  // Sort the teams array by points in descending order
-  const table = document.createElement("table");
-  table.classList.add("scoreboard-table");
-
-
-  // Create table headers
-  const headers = table.createTHead().insertRow();
-  headers.insertCell().textContent = "Rank";
-  headers.insertCell().textContent = "Team";
-  headers.insertCell().textContent = "Points";
-
-  // Create table body with sorted teams array
-  const tbody = table.createTBody();
-  let rank = 1;
-  for (let i = 0; i < teams.length; i++) { //Teams ist Standings
-    const row = tbody.insertRow();
-    const teamName = row.insertCell();
-    const points = row.insertCell();
-    const currentPoints = teams[i][1];
-
-    // Check if previous team has same points
-    if (i > 0 && teams[i - 1][1] === currentPoints) {
-      rank--;
-    }
-
-    // Add data to row
-    row.insertCell().textContent = rank;
-    teamName.textContent = teams[i][0];
-    points.textContent = currentPoints;
-
-    // Increment rank
-    rank++;
-  }
-
-  return table;
-}
-
 //Function that gives the points from the table
 function getPlayerPoints(searchString, numTimes1) {
   let value = 0;
-  for (let j = 0; j < numTimes1; j++) {
-    let tableId = `Round ${j + 1}`;
-
-    const table = document.getElementById(tableId);
+  for (let k = 0; k < numTimes1; k++) {
+    let tableId = `Round ${k + 1}`;
+    let table = document.getElementById(tableId);
 
     // Loop through each row of the table
     for (let i = 0; i < table.rows.length; i++) {
-      const row = table.rows[i];
+      let row = table.rows[i];
 
       // Loop through each cell in the row
       for (let j = 0; j < row.cells.length; j++) {
-        const cell = row.cells[j];
+        let cell = row.cells[j];
 
         // Check if the cell contains the search string
-        if (cell.textContent.includes(searchString)) {
-
+        if (cell.textContent === searchString) {
           if (j === 0 || j === 1) {
             let cellOne =
               table.rows[i].cells[5].querySelector("input[type=number]");
-              try {
-                value = value + parseInt(cellOne.value);
-              } catch (error) {
-                console.log("Error, du Lappen!", error);
-              }
-            /* if (Number.isNaN(cellOne) != false) {
-              //value = value;
-            } else {
+            try {
               value = value + parseInt(cellOne.value);
-            } */
+            } catch {}
           } else {
             let cellOne =
               table.rows[i].cells[7].querySelector("input[type=number]");
-              try {
-                value = value + parseInt(cellOne.value);
-              } catch (error) {
-                console.log("Error, du Lappen!", error);
-              }
-           /*  if (Number.isNaN(cellOne) != false) {
-              //value = value;
-            } else {
+            try {
               value = value + parseInt(cellOne.value);
-            } */
+            } catch {}
           }
         }
       }
     }
   }
-
   let indexPlayer = getPlayerIndex(searchString);
   players[indexPlayer].points = value;
 
-  console.log(players[indexPlayer].name + " hat " + players[indexPlayer].points + " Punkte")
+  console.log(
+    players[indexPlayer].name +
+      " hat " +
+      players[indexPlayer].points +
+      " Punkte"
+  );
 }
