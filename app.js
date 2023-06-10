@@ -199,9 +199,9 @@ startBtn.addEventListener("click", () => {
 //Action when button "Tabelle berechnen" is clicked
 let calculateTableBtn = document.getElementById("calculateTableBtn");
 calculateTableBtn.addEventListener("click", () => {
-  updateStandings(calcPlayerPoints());  
+  updateStandings(calcPlayerPoints());
 
-  console.log(players);
+  console.log("STANDINGS: ", players);
 });
 
 //Function that calculates the points of each player and gives back in right order
@@ -215,24 +215,39 @@ function calcPlayerPoints() {
 
   let standings = players;
   standings.sort((a, b) => b.points - a.points);
-  console.log("STANDINGS: ", standings);
   return standings;
 }
 
 //Function that updates the standings-table
 function updateStandings(standings) {
   const table = document.getElementById("standings");
-  console.log("TABELLE", table);
+  let currentRank = 1;
+  let previousPoints = null;
+
   for (let i = 0; i < standings.length; i++) {
     let row = table.rows[i + 1]; // i+1 to skip the header row
 
-    // Assuming the second cell (index 1) contains the player name
-    let spielerCell = row.cells[1];
-    spielerCell.textContent = standings[i].name;
+    // Assuming the second cell (index 1) contains the team name
+    let teamCell = row.cells[1];
+    teamCell.textContent = standings[i].name;
 
     // Assuming the third cell (index 2) contains the points
-    let punkteCell = row.cells[2];
-    punkteCell.textContent = standings[i].points;
+    let pointsCell = row.cells[2];
+    let points = standings[i].points;
+    pointsCell.textContent = points;
+
+    if (points === previousPoints) {
+      // If the points are the same as the previous team, assign the same rank
+      let rankCell = row.cells[0];
+      rankCell.textContent = currentRank;
+    } else {
+      // If the points are different from the previous team, update the rank
+      let rankCell = row.cells[0];
+      rankCell.textContent = i + 1;
+      currentRank = i + 1;
+    }
+
+    previousPoints = points;
   }
 }
 
@@ -249,9 +264,6 @@ function getSpielerArrayOutput() {
       //spielerArr.push(element.value);
     }
   }
-
-  console.log(players);
-  console.log(players[0].name);
 }
 
 //Function that creates the pairings in the table
@@ -265,7 +277,7 @@ function generatePairings(numberMatches) {
 
     for (let k = 1; k < row + 1; k++) {
       let currentRow = table.rows[k];
-      let index;
+      let index = 0;
 
       for (let i = 0; i < 5; i++) {
         if (i < 2) {
@@ -370,11 +382,4 @@ function getPlayerPoints(searchString, numTimes1) {
   }
   let indexPlayer = getPlayerIndex(searchString);
   players[indexPlayer].points = value;
-
-  console.log(
-    players[indexPlayer].name +
-      " hat " +
-      players[indexPlayer].points +
-      " Punkte"
-  );
 }
