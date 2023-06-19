@@ -1,17 +1,32 @@
+.banner {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  font-family: Calibri, sans-serif;
+  z-index: 9999;
+}
+
+
 .container {
   margin: auto;
   max-width: 600px;
-  padding: 20px;
+  padding: 70px;
   text-align: center;
 }
 
 .input-field {
-  margin-bottom: 20px;
-  text-align: left;
+  margin-bottom: 5px;
+  text-align: center;
 }
 
 .pairings-table {
-  margin-top: 50px;
+  margin-top: 15px;
 }
 
 .pairings-table + .pairings-table {
@@ -26,7 +41,8 @@ label {
 table {
   border-collapse: collapse;
   margin: auto;
-  margin-top: 50px;
+  margin-top: 20px;
+  margin-bottom: 35px;
 }
 
 th,
@@ -40,9 +56,10 @@ th {
 }
 
 button {
-  margin-top: 50px;
+  margin-top: 30px;
+  margin-bottom: 30px;
   padding: 10px 20px;
-  background-color: #4caf50;
+  background-color: #0757be;
   color: white;
   border: none;
   border-radius: 4px;
@@ -51,7 +68,7 @@ button {
 }
 
 button:hover {
-  background-color: #3e8e41;
+  background-color: #0756be9d;
 }
 
 input[type="number"] {
@@ -59,6 +76,7 @@ input[type="number"] {
   border-radius: 4px;
   border: 1px solid #ccc;
   box-sizing: border-box;
+  text-align: center;
 }
 
 input[type="text"] {
@@ -67,4 +85,8 @@ input[type="text"] {
   border: 1px solid #ccc;
   box-sizing: border-box;
   width: 100%;
+}
+
+body, .banner, .container, .input-field, .pairings-table, label, table, th, td, button, input[type="number"], input[type="text"] {
+  font-family: Calibri, sans-serif;
 }
