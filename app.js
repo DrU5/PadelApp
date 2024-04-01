@@ -133,37 +133,40 @@ function generatePairingsTable(matches, numTimes) {
       const cell6 = document.createElement("td");
       const cell7 = document.createElement("td");
       const cell8 = document.createElement("td");
-
+  
       row.appendChild(cell1);
       row.appendChild(cell2);
-
+  
       const separator1 = document.createElement("td");
       separator1.innerText = ":";
       row.appendChild(separator1);
-
+  
       row.appendChild(cell4);
       row.appendChild(cell5);
-
+  
       const inputCell1 = document.createElement("td");
       const input1 = document.createElement("input");
       input1.type = "number";
       input1.min = "0";
+      input1.value = "0"; // Set default value to 0
       inputCell1.appendChild(input1);
       row.appendChild(inputCell1);
-
+  
       const separator2 = document.createElement("td");
       separator2.innerText = ":";
       row.appendChild(separator2);
-
+  
       const inputCell2 = document.createElement("td");
       const input2 = document.createElement("input");
       input2.type = "number";
       input2.min = "0";
+      input2.value = "0"; // Set default value to 0
       inputCell2.appendChild(input2);
       row.appendChild(inputCell2);
-
+  
       tbody.appendChild(row);
-    }
+  }
+  
 
     tbody.getElementsByTagName("tr")[0];
     targetParentElement.appendChild(table);
@@ -253,7 +256,9 @@ function updateStandings(standings) {
 
 //Function that gets the names of all players
 function getSpielerArrayOutput() {
-  //const spielerArr = [];
+  // Clear the players array
+  players = [];
+
   const inputElements = document.getElementsByTagName("input");
 
   for (let i = 0; i < inputElements.length; i++) {
@@ -261,40 +266,88 @@ function getSpielerArrayOutput() {
     if (element.name.includes("name_")) {
       let player = { name: element.value };
       players.push(player);
-      //spielerArr.push(element.value);
     }
   }
 }
 
 //Function that creates the pairings in the table
 function generatePairings(numberMatches) {
+  // Assuming players array is defined elsewhere in your code
   const row = players.length / 4;
+  const gamesArray = [];
 
   for (let l = 1; l < numberMatches + 1; l++) {
     var table = document.getElementById("Round " + l);
     let shuffled = players.map((obj) => obj.name);
     shuffled = shuffleArray(shuffled);
 
-    for (let k = 1; k < row + 1; k++) {
-      let currentRow = table.rows[k];
-      let index = 0;
+    if (alreadyPaired(gamesArray, shuffled) === true) {
+      shuffled = shuffleArray(shuffled);   
+      l = l - 1   
+    } else {
+      for (let j = 0; j < shuffled.length; j += 2) {
+        let p1 = shuffled[j];
+        let p2 = shuffled[j + 1];
 
-      for (let i = 0; i < 5; i++) {
-        if (i < 2) {
-          index = (k - 1) * 4 + i;
-          if (index < shuffled.length + 1) {
-            currentRow.cells[i].innerHTML = shuffled[index];
-          }
-        } else if (i > 2) {
-          index = (k - 1) * 4 + i - 1;
-          if (index < shuffled.length + 1) {
-            currentRow.cells[i].innerHTML = shuffled[index];
+        gamesArray.push([p1, p2]);
+        gamesArray.push([p2, p1]);
+
+        console.log(gamesArray);
+      }
+
+      for (let k = 1; k < row + 1; k++) {
+        let currentRow = table.rows[k];
+        let index = 0;
+  
+        for (let i = 0; i < 5; i++) {
+          if (i < 2) {
+            index = (k - 1) * 4 + i;
+            if (index < shuffled.length + 1) {
+              currentRow.cells[i].innerHTML = shuffled[index];
+            }
+          } else if (i > 2) {
+            index = (k - 1) * 4 + i - 1;
+            if (index < shuffled.length + 1) {
+              currentRow.cells[i].innerHTML = shuffled[index];
+            }
           }
         }
       }
     }
   }
 }
+
+//Function that checks if the Pairing already happend
+function alreadyPaired(fullArray, shuffledArray) {
+  // Convert arrays to strings for easier comparison
+  const shuffledPairs = [];
+  for (let i = 0; i < shuffledArray.length; i += 2) {
+    shuffledPairs.push([shuffledArray[i], shuffledArray[i + 1]]);
+  }
+
+  const fullPairs = [];
+  for (let i = 0; i < fullArray.length; i++) {
+    fullPairs.push([fullArray[i][0], fullArray[i][1]]);
+    fullPairs.push([fullArray[i][1], fullArray[i][0]]);
+  }
+
+  // Check if any pair in shuffledPairs has already played
+  for (let i = 0; i < shuffledPairs.length; i++) {
+    for (let j = 0; j < fullPairs.length; j++) {
+      if (pairsAreEqual(shuffledPairs[i], fullPairs[j])) {
+        return true; // If a pair has already played, return true
+      }
+    }
+  }
+
+  return false; // If no pair has already played, return false
+}
+
+// Helper function to check if two pairs are equal
+function pairsAreEqual(pair1, pair2) {
+  return (pair1[0] === pair2[0] && pair1[1] === pair2[1]);
+}
+
 //Function that shuffles the given array
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
